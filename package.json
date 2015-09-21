@@ -1,0 +1,29 @@
+{
+  "name": "interactor",
+  "version": "1.0.0",
+  "description": "Simple API to split logic into modules",
+  "license": "MIT",
+  "main": "index.js",
+  "repository": "vdemedes/interactor",
+  "author": {
+    "name": "Vadim",
+    "email": "vdemedes@gmail.com",
+    "url": "https://github.com/vdemedes"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "dependencies": {
+    "bluebird": "^2.10.0",
+    "clone": "^1.0.2",
+    "exec-fn": "^1.0.1",
+    "is-function": "^1.0.1",
+    "is-promise": "^2.1.0"
+  },
+  "devDependencies": {
+    "ava": "^0.2.0"
+  },
+  "files": [
+    "index.js"
+  ]
+}
