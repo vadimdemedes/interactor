@@ -13,7 +13,7 @@ Basically a port of Ruby's [interactor](https://github.com/collectiveidea/intera
 </h1>
 
 
-### What is Interactor?
+### What is interactor?
 
 Interactor is a module, that does only one thing and does it well.
 Each interactor represents a single thing your application does.
@@ -43,7 +43,7 @@ $ npm install interactor --save
 For example, take a look how to use an `SaveComment` interactor to add new comment:
 
 ```js
-const interactor = require('interactor');
+const Interactor = require('interactor');
 
 class SaveComment extends Interactor {
   run () {
