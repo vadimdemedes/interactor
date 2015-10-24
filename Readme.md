@@ -1,4 +1,6 @@
-# interactor [![Circle CI](https://circleci.com/gh/vdemedes/interactor.svg?style=svg)](https://circleci.com/gh/vdemedes/interactor)
+# Interactor
+
+[![Build Status](https://travis-ci.org/vdemedes/interactor.svg?branch=master)](https://travis-ci.org/vdemedes/interactor) [![Coverage Status](https://coveralls.io/repos/vdemedes/interactor/badge.svg?branch=master&service=github)](https://coveralls.io/github/vdemedes/interactor?branch=master)
 
 Organize logic into separate, easily-testable modules.
 Basically a port of Ruby's [interactor](https://github.com/collectiveidea/interactor) gem.
@@ -13,14 +15,14 @@ Basically a port of Ruby's [interactor](https://github.com/collectiveidea/intera
 </h1>
 
 
-### What is interactor?
+## What is interactor?
 
 Interactor is a module, that does only one thing and does it well.
 Each interactor represents a single thing your application does.
 For example, `AddComment`, `OrderProduct` or `AuthenticateUser`.
 
 
-### Why interactors?
+## Why interactors?
 
 Why would you want to basically move your code to interactor?
 
@@ -31,14 +33,14 @@ Why would you want to basically move your code to interactor?
 5. Interactors can organize other interactors (see later why it's useful)
 
 
-### Installation
+## Installation
 
 ```
 $ npm install interactor --save
 ```
 
 
-### Usage
+## Usage
 
 For example, take a look how to use an `SaveComment` interactor to add new comment:
 
@@ -120,7 +122,7 @@ And the great part is - these pieces can be easily testable, because they do not
 
 
 
-#### Running an interactor
+### Running an interactor
 
 You should put your code into `run()` method of your interactor class.
 This function can be a "regular" function, generator function or function that returns a `Promise`:
@@ -149,7 +151,7 @@ class SaveComment extends Interactor {
 All of them work equally the same.
 
 
-#### Rollback an interactor
+### Rollback an interactor
 
 If error happens during `run()` or a returned promise is rejected, you can use `rollback()` method
 to rollback possible changes you did in `run()`:
@@ -172,7 +174,7 @@ class SaveComment extends Interactor {
 `rollback()` function can also be a generator function or function that returns a `Promise`, just like `run()`.
 
 
-#### Bundle interactors
+### Bundle interactors
 
 True power of interactors comes clear when you bundle them (like in the example with comments above).
 To **serially** run interactors, define `organize()` method that returns an array of `Interactor` classes
@@ -193,15 +195,13 @@ AddComment.run();
 ```
 
 
-### Tests
-
-[![Circle CI](https://circleci.com/gh/vdemedes/interactor.svg?style=svg)](https://circleci.com/gh/vdemedes/interactor)
+## Tests
 
 ```
 $ make test
 ```
 
 
-### License
+## License
 
 MIT © [vdemedes](https://github.com/vdemedes)

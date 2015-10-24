@@ -6,12 +6,13 @@
   "main": "index.js",
   "repository": "vdemedes/interactor",
   "author": {
-    "name": "Vadim",
+    "name": "Vadim Demedes",
     "email": "vdemedes@gmail.com",
     "url": "https://github.com/vdemedes"
   },
   "scripts": {
-    "test": "make test"
+    "test": "xo && nyc ava",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
     "bluebird": "^2.10.0",
@@ -21,9 +22,17 @@
     "is-promise": "^2.1.0"
   },
   "devDependencies": {
-    "ava": "^0.2.0"
+    "ava": "sindresorhus/ava",
+    "coveralls": "^2.11.4",
+    "eslint-config-vdemedes": "^1.0.0",
+    "nyc": "^3.2.2",
+    "xo": "^0.10.0"
   },
   "files": [
     "index.js"
-  ]
+  ],
+  "xo": {
+    "extends": "vdemedes",
+    "env": "node"
+  }
 }

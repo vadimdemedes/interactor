@@ -4,8 +4,6 @@
  * Dependencies
  */
 
-var isFunction = require('is-function');
-var isPromise = require('is-promise');
 var Promise = require('bluebird');
 var execute = require('exec-fn');
 var clone = require('clone');
@@ -23,7 +21,7 @@ module.exports = Interactor;
  */
 
 function Interactor (context) {
-  this.context = context || {};
+	this.context = context || {};
 }
 
 
@@ -34,70 +32,70 @@ function Interactor (context) {
  */
 
 Interactor.prototype._run = function () {
-  var self = this;
+	var self = this;
 
-  // this is an interactor
-  if (this.run) {
-    return execute(this.run, this.context)
-      .catch(function (err) {
-        // error happened, rollback now
-        return execute(self.rollback, self.context)
-          .then(function () {
-            // even if rollback went fine
-            // error from run() should be returned
-            return Promise.reject(err);
-          });
-      })
-      .then(function () {
-        // return interactor's context
-        return self.context;
-      });
-  }
+	// this is an interactor
+	if (this.run) {
+		return execute(this.run, this.context)
+			.catch(function (err) {
+				// error happened, rollback now
+				return execute(self.rollback, self.context)
+					.then(function () {
+						// even if rollback went fine
+						// error from run() should be returned
+						return Promise.reject(err);
+					});
+			})
+			.then(function () {
+				// return interactor's context
+				return self.context;
+			});
+	}
 
-  // this is a bundle of interactors
-  if (this.organize) {
-    // get a list of sub-interactors
-    var organize = execute(this.organize, this.context);
+	// this is a bundle of interactors
+	if (this.organize) {
+		// get a list of sub-interactors
+		var organize = execute(this.organize, this.context);
 
-    // store succeeded interactors, so that
-    // we can rollback them later, if needed
-    var interactors = [];
+		// store succeeded interactors, so that
+		// we can rollback them later, if needed
+		var interactors = [];
 
-    return Promise.resolve(organize)
-      .each(function (Interactor, index) {
-        // clone context, so each interactor
-        // is truly independent
-        var interactor = new Interactor(clone(self.context));
+		return Promise.resolve(organize)
+			.each(function (Interactor) {
+				// clone context, so each interactor
+				// is truly independent
+				var interactor = new Interactor(clone(self.context));
 
-        return interactor._run()
-          .then(function (context) {
-            // interactor succeeded
-            // save its context
-            self.context = context;
+				return interactor._run()
+					.then(function (context) {
+						// interactor succeeded
+						// save its context
+						self.context = context;
 
-            interactors.push(interactor);
-          })
-          .catch(function (err) {
-            // interactor failed
-            // now, rollback succeeded interactors
-            // in a reversed order
-            interactors.reverse();
+						interactors.push(interactor);
+					})
+					.catch(function (err) {
+						// interactor failed
+						// now, rollback succeeded interactors
+						// in a reversed order
+						interactors.reverse();
 
-            return Promise.resolve(interactors)
-              .each(function (interactor) {
-                return execute(interactor.rollback, interactor.context);
-              })
-              .then(function () {
-                // return initial error
-                return Promise.reject(err);
-              });
-          });
-      })
-      .then(function () {
-        // return final context
-        return self.context;
-      });
-  }
+						return Promise.resolve(interactors)
+							.each(function (interactor) {
+								return execute(interactor.rollback, interactor.context);
+							})
+							.then(function () {
+								// return initial error
+								return Promise.reject(err);
+							});
+					});
+			})
+			.then(function () {
+				// return final context
+				return self.context;
+			});
+	}
 };
 
 
@@ -117,6 +115,6 @@ Interactor.prototype.rollback = function () {};
  */
 
 Interactor.run = function (context) {
-  var interactor = new this(context);
-  return interactor._run();
+	var interactor = new this(context);
+	return interactor._run();
 };
