@@ -198,7 +198,7 @@ AddComment.run();
 ## Tests
 
 ```
-$ make test
+$ npm test
 ```
 
 
