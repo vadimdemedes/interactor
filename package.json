@@ -15,7 +15,7 @@
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
-    "bluebird": "^2.10.0",
+    "bluebird": "^3.0.6",
     "clone": "^1.0.2",
     "exec-fn": "^1.0.1",
     "is-function": "^1.0.1",
@@ -25,8 +25,8 @@
     "ava": "sindresorhus/ava",
     "coveralls": "^2.11.4",
     "eslint-config-vdemedes": "^1.0.0",
-    "nyc": "^3.2.2",
-    "xo": "^0.10.0"
+    "nyc": "^4.0.1",
+    "xo": "^0.11.2"
   },
   "files": [
     "index.js"
