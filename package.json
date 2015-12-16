@@ -15,7 +15,7 @@
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
-    "bluebird": "^2.10.0",
+    "bluebird": "^3.1.0",
     "clone": "^1.0.2",
     "exec-fn": "^1.0.1",
     "is-function": "^1.0.1",
