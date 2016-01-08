@@ -1,6 +1,7 @@
 # Interactor
 
-[![Build Status](https://travis-ci.org/vdemedes/interactor.svg?branch=master)](https://travis-ci.org/vdemedes/interactor) [![Coverage Status](https://coveralls.io/repos/vdemedes/interactor/badge.svg?branch=master&service=github)](https://coveralls.io/github/vdemedes/interactor?branch=master)
+[![Build Status](https://travis-ci.org/vdemedes/interactor.svg?branch=master)](https://travis-ci.org/vdemedes/interactor)
+[![Coverage Status](https://coveralls.io/repos/vdemedes/interactor/badge.svg?branch=master&service=github)](https://coveralls.io/github/vdemedes/interactor?branch=master)
 
 Organize logic into separate, easily-testable modules.
 Basically a port of Ruby's [interactor](https://github.com/collectiveidea/interactor) gem.
@@ -204,4 +205,4 @@ $ npm test
 
 ## License
 
-MIT © [vdemedes](https://github.com/vdemedes)
+MIT © [Vadym Demedes](https://github.com/vdemedes)
