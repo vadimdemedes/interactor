@@ -12,7 +12,7 @@ const test = require('ava');
  * Tests
  */
 
-test('run interactor', function (t) {
+test('run interactor', async t => {
 	t.plan(1);
 
 	class Test extends Interactor {
@@ -21,10 +21,10 @@ test('run interactor', function (t) {
 		}
 	}
 
-	Test.run();
+	await Test.run();
 });
 
-test('run with context', function (t) {
+test('run with context', async t => {
 	t.plan(1);
 
 	let context = {
@@ -37,11 +37,11 @@ test('run with context', function (t) {
 		}
 	}
 
-	Test.run(context);
+	await Test.run(context);
 });
 
-test('run and return context', function (t) {
-	// t.plan(1);
+test('run and return context', async t => {
+	t.plan(1);
 
 	class Test extends Interactor {
 		run () {
@@ -49,12 +49,11 @@ test('run and return context', function (t) {
 		}
 	}
 
-	return Test.run().then(function (context) {
-		t.true(context.value);
-	});
+	let context = await Test.run();
+	t.true(context.value);
 });
 
-test('rollback', function (t) {
+test('rollback', async t => {
 	t.plan(3);
 
 	class Test extends Interactor {
@@ -69,12 +68,13 @@ test('rollback', function (t) {
 		}
 	}
 
-	Test.run().catch(function () {
-		t.pass();
-	});
+	await Test.run()
+		.catch(() => {
+			t.pass();
+		});
 });
 
-test('bundle other interactors', function (t) {
+test('bundle other interactors', async t => {
 	t.plan(3);
 
 	let arr = [];
@@ -101,14 +101,13 @@ test('bundle other interactors', function (t) {
 		}
 	}
 
-	Bundle.run().then(function (context) {
-		t.same(arr, ['first', 'second']);
-		t.true(context.first);
-		t.true(context.second);
-	});
+	let context = await Bundle.run();
+	t.same(arr, ['first', 'second']);
+	t.true(context.first);
+	t.true(context.second);
 });
 
-test('rollback bundled interactors', function (t) {
+test('rollback bundled interactors', async t => {
 	t.plan(2);
 
 	let arr = [];
@@ -161,7 +160,9 @@ test('rollback bundled interactors', function (t) {
 		}
 	}
 
-	Bundle.run().catch(function (err) {
+	try {
+		await Bundle.run();
+	} catch (err) {
 		t.is(err.message, 'Fatal');
 		t.same(arr, [
 			'first',
@@ -171,5 +172,5 @@ test('rollback bundled interactors', function (t) {
 			'rollback:second',
 			'rollback:first'
 		]);
-	});
+	}
 });
