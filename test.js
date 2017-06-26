@@ -1,176 +1,141 @@
-'use strict';
-
-/**
- * Dependencies
- */
-
-const Interactor = require('./');
-const test = require('ava');
-
-
-/**
- * Tests
- */
+import {spy} from 'sinon';
+import test from 'ava';
+import Interactor from '.';
 
 test('run interactor', async t => {
-	t.plan(1);
-
 	class Test extends Interactor {
-		run () {
-			t.pass();
-		}
+		run() {}
 	}
 
+	spy(Test.prototype, 'run');
+
 	await Test.run();
+
+	t.true(Test.prototype.run.calledOnce);
 });
 
 test('run with context', async t => {
-	t.plan(1);
-
-	let context = {
-		a: 1
-	};
-
 	class Test extends Interactor {
-		run () {
-			t.is(this.a, 1);
+		run(context) {
+			t.deepEqual(this.context, {a: 1});
+			t.deepEqual(context, {a: 1});
 		}
 	}
 
-	await Test.run(context);
-});
+	spy(Test.prototype, 'run');
 
-test('run and return context', async t => {
-	t.plan(1);
+	const context = await Test.run({a: 1});
 
-	class Test extends Interactor {
-		run () {
-			this.value = true;
-		}
-	}
-
-	let context = await Test.run();
-	t.true(context.value);
+	t.true(Test.prototype.run.calledOnce);
+	t.deepEqual(context, {a: 1});
 });
 
 test('rollback', async t => {
-	t.plan(3);
-
 	class Test extends Interactor {
-		run () {
-			t.pass();
-
-			throw new Error();
+		run() {
+			throw new Error('Oops');
 		}
 
-		rollback () {
-			t.pass();
-		}
+		rollback() {}
 	}
 
-	await Test.run()
-		.catch(() => {
-			t.pass();
-		});
+	spy(Test.prototype, 'run');
+	spy(Test.prototype, 'rollback');
+
+	await t.throws(Test.run(), 'Oops');
+	t.true(Test.prototype.run.calledOnce);
+	t.true(Test.prototype.rollback.calledOnce);
 });
 
 test('bundle other interactors', async t => {
-	t.plan(3);
-
-	let arr = [];
+	const arr = [];
 
 	class First extends Interactor {
-		run () {
+		run(context) {
 			arr.push('first');
 
-			this.first = true;
+			context.first = true;
 		}
 	}
 
 	class Second extends Interactor {
-		run () {
+		run(context) {
 			arr.push('second');
 
-			this.second = true;
+			context.second = true;
 		}
 	}
 
 	class Bundle extends Interactor {
-		organize () {
+		organize() {
 			return [First, Second];
 		}
 	}
 
-	let context = await Bundle.run();
-	t.same(arr, ['first', 'second']);
-	t.true(context.first);
-	t.true(context.second);
+	const context = await Bundle.run();
+	t.deepEqual(arr, ['first', 'second']);
+	t.deepEqual(context, {first: true, second: true});
 });
 
 test('rollback bundled interactors', async t => {
-	t.plan(2);
-
-	let arr = [];
+	const arr = [];
 
 	class First extends Interactor {
-		run () {
+		run() {
 			arr.push('first');
 		}
 
-		rollback () {
+		rollback() {
 			arr.push('rollback:first');
 		}
 	}
 
 	class Second extends Interactor {
-		run () {
+		run() {
 			arr.push('second');
 		}
 
-		rollback () {
+		rollback() {
 			arr.push('rollback:second');
 		}
 	}
 
 	class Third extends Interactor {
-		run () {
+		run() {
 			arr.push('third');
 
-			throw new Error('Fatal');
+			throw new Error('Oops');
 		}
 
-		rollback () {
+		rollback() {
 			arr.push('rollback:third');
 		}
 	}
 
 	class Fourth extends Interactor {
-		run () {
+		run() {
 			arr.push('fourth');
 		}
 
-		rollback () {
+		rollback() {
 			arr.push('rollback:fourth');
 		}
 	}
 
 	class Bundle extends Interactor {
-		organize () {
+		organize() {
 			return [First, Second, Third, Fourth];
 		}
 	}
 
-	try {
-		await Bundle.run();
-	} catch (err) {
-		t.is(err.message, 'Fatal');
-		t.same(arr, [
-			'first',
-			'second',
-			'third',
-			'rollback:third',
-			'rollback:second',
-			'rollback:first'
-		]);
-	}
+	await t.throws(Bundle.run(), 'Oops');
+
+	t.deepEqual(arr, [
+		'first',
+		'second',
+		'third',
+		'rollback:third',
+		'rollback:second',
+		'rollback:first'
+	]);
 });

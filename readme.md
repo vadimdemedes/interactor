@@ -1,12 +1,3 @@
-# Interactor
-
-[![Build Status](https://travis-ci.org/vdemedes/interactor.svg?branch=master)](https://travis-ci.org/vdemedes/interactor)
-[![Coverage Status](https://coveralls.io/repos/vdemedes/interactor/badge.svg?branch=master&service=github)](https://coveralls.io/github/vdemedes/interactor?branch=master)
-
-Organize logic into separate, easily-testable modules.
-Basically a port of Ruby's [interactor](https://github.com/collectiveidea/interactor) gem.
-
-
 <h1 align="center">
   <br>
   <img width="200" src="media/logo.png">
@@ -14,6 +5,11 @@ Basically a port of Ruby's [interactor](https://github.com/collectiveidea/intera
   <br>
   <br>
 </h1>
+
+[![Build Status](https://travis-ci.org/vadimdemedes/interactor.svg?branch=master)](https://travis-ci.org/vadimdemedes/interactor)
+
+Organize logic into separate, easily-testable modules.
+Inspired by Ruby's [interactor](https://github.com/collectiveidea/interactor) gem.
 
 
 ## What is interactor?
@@ -37,7 +33,7 @@ Why would you want to basically move your code to interactor?
 ## Installation
 
 ```
-$ npm install interactor --save
+$ npm install --save interactor
 ```
 
 
@@ -49,39 +45,32 @@ For example, take a look how to use an `SaveComment` interactor to add new comme
 const Interactor = require('interactor');
 
 class SaveComment extends Interactor {
-  run () {
-    let comment = new Comment(); // your model
+  async run(context) {
+    const comment = new Comment();
 
-    comment.post_id = this.post.id;
-    comment.author = this.comment.author;
-    comment.body = this.comment.body;
+    comment.post_id = context.post.id;
+    comment.author = context.comment.author;
+    comment.body = context.comment.body;
 
-    return comment.save();
+    await comment.save();
   }
+
+	async rollback() {
+		// rollback in case of an error thrown in run()
+	}
 }
 
-let comment = {
-  author: 'Vadim',
-  body: 'My God, interactors are amazing'
-};
-
-let post = {
+const post = {
   id: 1,
   title: 'Great post'
 };
 
-let context = {
-  comment: comment,
-  post: post
+const comment = {
+  author: 'Vadim',
+  body: 'My God, interactors are amazing'
 };
 
-SaveComment.run(context)
-  .then(function () {
-    // comment saved
-  })
-  .catch(function (err) {
-    // error occurred
-  });
+await SaveComment.run({post, comment});
 ```
 
 Now, let's say we want to send a push notification, after a comment was saved.
@@ -90,11 +79,13 @@ With interactors it is easy, you just create a new interactor and bundle them to
 
 ```js
 class SendCommentNotification extends Interactor {
-  run () {
-    let notification = new Notification();
+  async run (context) {
+    const notification = new Notification();
 
     notification.message = 'New comment was posted in post ' + this.post.title;
-    notification.post_id = this.post.id;
+    notification.post_id = context.post.id;
+
+		await notification.save();
   }
 }
 
@@ -104,14 +95,7 @@ class AddComment extends Interactor {
   }
 }
 
-AddComment.run(context)
-  .then(function () {
-    // comment saved
-    // notification sent
-  })
-  .catch(function (err) {
-    // error occurred
-  });
+await AddComment.run({post, comment});
 ```
 
 It's like LEGO blocks, you just compose pieces of logic and get a complete feature at the end.
@@ -126,7 +110,7 @@ And the great part is - these pieces can be easily testable, because they do not
 ### Running an interactor
 
 You should put your code into `run()` method of your interactor class.
-This function can be a "regular" function, generator function or function that returns a `Promise`:
+This function can be a "regular" function, async function or function that returns a `Promise`:
 
 ```js
 class SaveComment extends Interactor {
@@ -143,43 +127,39 @@ class SaveComment extends Interactor {
 }
 
 class SaveComment extends Interactor {
-  * run () {
-    // generator function
-  }
+	async run () {
+		// returns promise
+	}
 }
 ```
-
-All of them work equally the same.
 
 
 ### Rollback an interactor
 
-If error happens during `run()` or a returned promise is rejected, you can use `rollback()` method
-to rollback possible changes you did in `run()`:
+If error happens during `run()` or a returned promise is rejected, you can use `rollback()` method to rollback possible changes you did in `run()`:
 
 ```js
 class SaveComment extends Interactor {
-  run () {
-    let comment = new Comment();
+  async run () {
+    const comment = new Comment();
 
-    return comment.save();
+    await comment.save();
   }
 
-  rollback () {
+  async rollback () {
     // error happened
     // need to rollback
   }
 }
 ```
 
-`rollback()` function can also be a generator function or function that returns a `Promise`, just like `run()`.
+`rollback()` function can also be a normal function or a function that returns a `Promise`, just like `run()`.
 
 
 ### Bundle interactors
 
-True power of interactors comes clear when you bundle them (like in the example with comments above).
-To **serially** run interactors, define `organize()` method that returns an array of `Interactor` classes
-in an order which you want them to run.
+The true power of interactors comes clear when you bundle them (like in the example with comments above).
+To **serially** run interactors, define `organize()` method that returns an array of `Interactor` classes in an order which you want them to run.
 
 When interactor fails, previous interactors (including a failed one) will be rolled back and next interactors won't run at all.
 
@@ -192,17 +172,10 @@ class AddComment extends Interactor {
   }
 }
 
-AddComment.run();
-```
-
-
-## Tests
-
-```
-$ npm test
+await AddComment.run();
 ```
 
 
 ## License
 
-MIT © [Vadym Demedes](https://github.com/vdemedes)
+MIT © [Vadim Demedes](https://github.com/vadimdemedes)

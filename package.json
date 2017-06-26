@@ -3,36 +3,25 @@
   "version": "1.0.0",
   "description": "Simple API to split logic into modules",
   "license": "MIT",
-  "main": "index.js",
-  "repository": "vdemedes/interactor",
+  "repository": "vadimdemedes/interactor",
   "author": {
     "name": "Vadim Demedes",
     "email": "vdemedes@gmail.com",
-    "url": "https://github.com/vdemedes"
+    "url": "https://github.com/vadimdemedes"
   },
   "scripts": {
-    "test": "xo && nyc ava --serial --verbose",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
-  },
-  "dependencies": {
-    "bluebird": "^2.10.0",
-    "clone": "^1.0.2",
-    "exec-fn": "^1.0.1",
-    "is-function": "^1.0.1",
-    "is-promise": "^2.1.0"
-  },
-  "devDependencies": {
-    "ava": "^0.9.1",
-    "coveralls": "^2.11.6",
-    "eslint-config-vdemedes": "^1.0.1",
-    "nyc": "^5.3.0",
-    "xo": "^0.12.1"
+    "test": "xo && ava"
   },
   "files": [
     "index.js"
   ],
-  "xo": {
-    "extends": "vdemedes",
-    "env": "node"
+  "dependencies": {
+    "p-each-series": "^1.0.0",
+    "p-try": "^1.0.0"
+  },
+  "devDependencies": {
+    "ava": "^0.19.1",
+    "sinon": "^2.3.5",
+    "xo": "^0.18.2"
   }
 }
